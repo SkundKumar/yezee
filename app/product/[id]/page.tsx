@@ -47,7 +47,7 @@ const ProductPage = async ({ params: { id } }: Props) => {
 
                 <ProductQuantity product={product} />
 
-                <div className="text-2xl font-bold">${product.price}</div>
+                <div className="text-2xl font-bold">₹{product.price}</div>
               </div>
 
               <div

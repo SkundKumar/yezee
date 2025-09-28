@@ -109,7 +109,7 @@ const ProductGrid = ({ products }: Props) => {
                           <div className="flex flex-1 flex-col">
                             <div className="flex justify-between text-base font-medium text-gray-900">
                               <h3>{item.name}</h3>
-                              <p className="ml-4">${item.price}</p>
+                              <p className="ml-4">₹{item.price}</p>
                             </div>
                             <div className="flex items-center mt-2">
                               <button
@@ -148,7 +148,7 @@ const ProductGrid = ({ products }: Props) => {
                   <div className="border-t border-gray-200 p-6">
                     <div className="flex justify-between text-base font-medium text-gray-900 mb-4">
                       <p>Subtotal</p>
-                      <p>${cartTotal}</p>
+                      <p>₹{cartTotal}</p>
                     </div>
                     <Checkout />
                   </div>
@@ -183,7 +183,7 @@ const ProductGrid = ({ products }: Props) => {
                   </h3>
 
                   <p className="text-base font-semibold text-primary">
-                    ${product.price}
+                  ₹{product.price}
                   </p>
                 </div>
               </div>

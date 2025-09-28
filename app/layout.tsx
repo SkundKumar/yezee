@@ -4,7 +4,7 @@ import './globals.css'
 import CartProvider from '@/providers/cart-context'
 
 const dmmono = DM_Mono({
-  weight: '400',
+  weight: '300',
   subsets: ['latin'],
 })
 

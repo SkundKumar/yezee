@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     const { items } = await req.json()
     const lineItems = items.map((item: any) => ({
       price_data: {
-        currency: 'usd',
+        currency: 'inr',
         product_data: {
           name: item.name,
           images: [item.image],

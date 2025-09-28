@@ -33,7 +33,7 @@ const ProductAction = (props: Props) => {
           >
             <div>{item.name}</div>
             <div className="text-center">{item.quantity}</div>
-            <div className="text-right">${item.price * item.quantity}</div>
+            <div className="text-right">₹{item.price * item.quantity}</div>
           </div>
         ))}
       </div>
@@ -42,7 +42,7 @@ const ProductAction = (props: Props) => {
       <div className="mt-auto">
         <div className="flex items-center justify-between">
           <div>Subtotal</div>
-          <div className="text-right">${cartTotal || 0}</div>
+          <div className="text-right">₹{cartTotal || 0}</div>
         </div>
       </div>
 

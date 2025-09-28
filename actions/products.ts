@@ -2,7 +2,7 @@
 import WooCommerceRestApi from 'woocommerce-rest-ts-api'
 
 const WooCommerce = new WooCommerceRestApi({
-  url: 'https://testingwebprodigies.ue1.rapydapps.cloud/',
+  url: 'http://e-com.local/',
   consumerKey: process.env.WC_CONSUMER_KEY as string,
   consumerSecret: process.env.WC_CONSUMER_SECRET as string,
   version: 'wc/v3',
