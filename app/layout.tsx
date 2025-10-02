@@ -2,9 +2,11 @@ import type { Metadata } from 'next'
 import { DM_Mono } from 'next/font/google'
 import './globals.css'
 import CartProvider from '@/providers/cart-context'
+import { WishlistProvider } from '@/providers/wishlist-context'
+import { Header } from '@/components/Header' // Import the new Header
 
 const dmmono = DM_Mono({
-  weight: '300',
+  weight: '400',
   subsets: ['latin'],
 })
 
@@ -19,12 +21,14 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-    >
-      <body className={`${dmmono.className}`}>
-        <CartProvider>{children}</CartProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body className={dmmono.className}>
+        <CartProvider>
+          <WishlistProvider>
+            <Header /> {/* Add the Header here */}
+            <main>{children}</main> {/* Page content will render here */}
+          </WishlistProvider>
+        </CartProvider>
       </body>
     </html>
   )

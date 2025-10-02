@@ -1,7 +1,10 @@
-import { getProducts } from '@/actions/products'
-import ProductGrid from '@/components/ProductGrid'
+import { getCategories } from "@/actions/products";
+import CategoryGrid from "@/components/CategoryGrid"; // We will create this next
 
 export default async function Home() {
-  const products = await getProducts()
-  return <ProductGrid products={products} />
+  const categories = await getCategories();
+
+  return (
+    <CategoryGrid categories={categories} />
+  );
 }

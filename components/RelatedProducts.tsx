@@ -1,20 +1,17 @@
-'use client'
-import { Heart, Truck } from 'lucide-react'
-import Link from 'next/link'
-import Image from 'next/image'
-import { useWishlist } from '@/providers/wishlist-context'
+'use client';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useWishlist } from '@/providers/wishlist-context';
+import { Heart, Truck } from 'lucide-react';
 
-type Props = {
-  products: any[]
-}
-
-const ProductGrid = ({ products }: Props) => {
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist()
+export default function RelatedProducts({ products }: { products: any[] }) {
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
-        {Array.isArray(products) && products.map((product) => (
+    <div className="mt-16">
+      <h2 className="text-2xl font-bold mb-6">You Might Also Like</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+        {products.map((product) => (
           <div key={product.id} className="group relative">
             <Link href={`/product/${product.id}`}>
               <div className="aspect-square w-full overflow-hidden rounded-md bg-gray-100 group-hover:opacity-75">
@@ -35,12 +32,12 @@ const ProductGrid = ({ products }: Props) => {
                 </p>
               </div>
             </Link>
-            
+
             <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
               <Truck className="h-4 w-4" />
               <span>Delivery in 5-6 days</span>
             </div>
-            
+
             <button
               onClick={() => isInWishlist(product.id) ? removeFromWishlist(product.id) : addToWishlist(product.id)}
               className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition"
@@ -55,7 +52,5 @@ const ProductGrid = ({ products }: Props) => {
         ))}
       </div>
     </div>
-  )
+  );
 }
-
-export default ProductGrid

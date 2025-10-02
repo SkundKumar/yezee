@@ -8,14 +8,46 @@ const WooCommerce = new WooCommerceRestApi({
   version: 'wc/v3',
 })
 
-export const getProducts = async () => {
-  const products = await WooCommerce.get('products')
-  return products.data
+// This function can now accept filter options
+export const getProducts = async (options = {}) => {
+  try {
+    const products = await WooCommerce.get('products', options)
+    return products.data
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    return []; // Return an empty array on error
+  }
 }
 
+// This function is updated to correctly fetch a single product by its ID
 export const getProduct = async (id: string) => {
-  const product = await WooCommerce.get(`products`, {
-    id: parseInt(id),
-  })
-  return product.data
+  try {
+    const product = await WooCommerce.get(`products/${id}`)
+    return product.data
+  } catch (error) {
+    console.error(`Error fetching product ${id}:`, error);
+    return null; // Return null on error
+  }
 }
+
+export const getCategories = async () => {
+  try {
+    const { data } = await WooCommerce.get('products/categories');
+    return data;
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    return [];
+  }
+};
+
+export const getCategoryBySlug = async (slug: string) => {
+  try {
+    // This fetches the category details using the slug
+    const { data } = await WooCommerce.get('products/categories', { slug: slug });
+    // The API returns an array, so we return the first item
+    return data[0]; 
+  } catch (error) {
+    console.error(`Error fetching category ${slug}:`, error);
+    return null;
+  }
+};
