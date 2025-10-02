@@ -85,7 +85,7 @@ export function Header() {
         <div className="flex h-16 items-center justify-between">
           
           {/* Left Side: Logo */}
-          <Link href="/" className="text-2xl font-bold tracking-tighter">YEEZY</Link>
+          <Link href="/" className="text-2xl font-bold tracking-tighter">RV</Link>
 
           {/* Center: Desktop Navigation */}
           <nav className="hidden md:flex gap-6">
