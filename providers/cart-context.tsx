@@ -1,93 +1,103 @@
-'use client'
-import React, { createContext, useCallback, useState } from 'react'
+'use client';
+import { createContext, useState, useEffect, ReactNode } from 'react';
+import { useUser } from '@clerk/nextjs';
+import { toast } from 'sonner';
 
-type Props = { children: React.ReactNode }
+export const CartContext = createContext<any>(null);
 
-interface CartItem {
-  id: string
-  name: string
-  price: number
-  quantity: number
-  images: {
-    src: string
-  }[]
-}
+const CartProvider = ({ children }: { children: ReactNode }) => {
+  const { user, isLoaded } = useUser();
+  const [isOpen, setIsOpen] = useState(false);
+  const [items, setItems] = useState<any[]>([]);
 
-interface CartContextType {
-  items: CartItem[]
-  addItem: (product: any) => void
-  removeItem: (productId: string) => void
-  updateQuantity: (productId: string, quantity: number) => void
-  clearCart: () => void
-  isOpen: boolean
-  setIsOpen: (open: boolean) => void
-  cartTotal: number
-}
-
-export const CartContext = createContext<CartContextType | undefined>(undefined)
-
-const CartProvider = ({ children }: Props) => {
-  const [items, setItems] = useState<CartItem[]>([])
-  const [isOpen, setIsOpen] = useState(false)
-
-  const addItem = useCallback((product: any) => {
-    setItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item.id === product.id)
-
-      if (existingItem) {
-        return prevItems.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        )
+  // Fetches the full cart from our backend
+  const fetchCart = async () => {
+      if (!user) {
+          setItems([]); // Clear cart if user logs out
+          return;
+      };
+      try {
+          // This GET request now fetches the user's saved cart from the DB
+          const response = await fetch('/api/cart');
+          if (!response.ok) throw new Error("Failed to fetch cart.");
+          const data = await response.json();
+          setItems(data);
+      } catch (error) {
+          console.error("Failed to fetch cart:", error);
       }
-      return [...prevItems, { ...product, quantity: 1 }]
-    })
-    setIsOpen(true)
-  }, [])
+  };
 
-  const removeItem = useCallback((productId: string) => {
-    setItems((prevItems) => prevItems.filter((item) => item.id !== productId))
-  }, [])
+  useEffect(() => {
+      // Fetch the cart only when Clerk has loaded the user's status
+      if(isLoaded) {
+        fetchCart();
+      }
+  }, [isLoaded, user]);
 
-  const updateQuantity = useCallback((productId: string, quantity: number) => {
-    if (quantity < 1) {
-      removeItem(productId)
-      return
+  const addItem = async (product: any) => {
+    if (!user) {
+        toast.error("Please sign in to add items to your cart.");
+        return;
     }
 
-    setItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === productId ? { ...item, quantity } : item
-      )
-    )
-  }, [])
+    const existingItem = items.find(item => item.id === product.id);
 
-  const clearCart = useCallback(() => {
-    setItems([])
-  }, [])
+    if (existingItem) {
+        // If item exists, just update its quantity
+        updateQuantity(product.id, existingItem.quantity + 1);
+    } else {
+        // Optimistically add to UI
+        setItems(prev => [...prev, {...product, quantity: 1}]);
+        toast.success(`${product.name} added to cart!`);
 
-  const cartTotal = items.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  )
+        // Sync with backend
+        await fetch('/api/cart', {
+            method: 'POST',
+            body: JSON.stringify({ productId: product.id, quantity: 1 }),
+        });
+    }
+    setIsOpen(true);
+  };
+
+  const updateQuantity = async (productId: number, quantity: number) => {
+    if (!user) return;
+
+    if (quantity <= 0) {
+        removeItem(productId);
+        return;
+    }
+
+    // Optimistically update UI
+    setItems(prev => prev.map(item => item.id === productId ? {...item, quantity} : item));
+
+    // Sync with backend
+    await fetch('/api/cart', {
+        method: 'POST',
+        body: JSON.stringify({ productId, quantity }),
+    });
+  };
+
+  const removeItem = async (productId: number) => {
+    if (!user) return;
+
+    // Optimistically update UI
+    setItems(prev => prev.filter(item => item.id !== productId));
+    toast.success("Item removed from cart.");
+
+    // Sync with backend
+    await fetch('/api/cart', {
+        method: 'DELETE',
+        body: JSON.stringify({ productId }),
+    });
+  };
+
+  const cartTotal = items.reduce((total, item) => total + (item.price * item.quantity), 0);
 
   return (
-    <CartContext.Provider
-      value={{
-        items,
-        addItem,
-        removeItem,
-        updateQuantity,
-        clearCart,
-        isOpen,
-        setIsOpen,
-        cartTotal,
-      }}
-    >
+    <CartContext.Provider value={{ isOpen, setIsOpen, items, addItem, removeItem, updateQuantity, cartTotal }}>
       {children}
     </CartContext.Provider>
-  )
-}
+  );
+};
 
-export default CartProvider
+export default CartProvider;
