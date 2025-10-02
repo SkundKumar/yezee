@@ -1,35 +1,32 @@
-import type { Metadata } from 'next'
-import { DM_Mono } from 'next/font/google'
-import './globals.css'
-import CartProvider from '@/providers/cart-context'
-import { WishlistProvider } from '@/providers/wishlist-context'
-import { Header } from '@/components/Header' // Import the new Header
+import type { Metadata } from 'next';
+import { DM_Mono } from 'next/font/google';
+import './globals.css';
+import CartProvider from '@/providers/cart-context';
+import { WishlistProvider } from '@/providers/wishlist-context';
+import { Header } from '@/components/Header';
+import { Toaster } from 'sonner';
+import { ClerkProvider } from '@clerk/nextjs';
+import Script from 'next/script';
 
-const dmmono = DM_Mono({
-  weight: '400',
-  subsets: ['latin'],
-})
+const dmmono = DM_Mono({ weight: '400', subsets: ['latin'] });
 
-export const metadata: Metadata = {
-  title: 'Yeezy Clone',
-  description: 'Fake yeezy website. This is just for learning purpose.',
-}
+export const metadata: Metadata = { title: 'Yeezy Clone' };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={dmmono.className}>
-        <CartProvider>
-          <WishlistProvider>
-            <Header /> {/* Add the Header here */}
-            <main>{children}</main> {/* Page content will render here */}
-          </WishlistProvider>
-        </CartProvider>
-      </body>
-    </html>
-  )
+    <ClerkProvider>
+      <html lang="en">
+        <body className={dmmono.className}>
+          <CartProvider>
+            <WishlistProvider>
+              <Header />
+              <main>{children}</main>
+              <Toaster position="top-center" richColors />
+            </WishlistProvider>
+          </CartProvider>
+          <Script id="razorpay-checkout-js" src="https://checkout.razorpay.com/v1/checkout.js" />
+        </body>
+      </html>
+    </ClerkProvider>
+  );
 }

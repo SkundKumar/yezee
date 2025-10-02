@@ -1,6 +1,6 @@
 import { getProduct, getProducts } from '@/actions/products';
 import { ProductPageActions } from '@/components/ProductPageActions';
-import RelatedProducts from '@/components/RelatedProducts'; // Import the new component
+import RelatedProducts from '@/components/RelatedProducts';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Truck } from 'lucide-react';
@@ -38,7 +38,22 @@ const ProductPage = async ({ params: { id } }: { params: { id: string } }) => {
         <div className="lg:col-span-1 flex flex-col">
           <div className="flex items-center justify-between gap-4">
               <h1 className="text-3xl font-bold">{product.name}</h1>
-              <p className="text-2xl font-bold">₹{product.price}</p>
+              <div>
+                {product.on_sale ? (
+                  <div className="flex items-center gap-2">
+                    <p className="text-xl font-semibold text-red-600">
+                      ₹{product.sale_price}
+                    </p>
+                    <p className="text-sm text-gray-400 line-through">
+                      ₹{product.regular_price}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-base font-semibold text-primary">
+                    ₹{product.price}
+                  </p>
+                )}
+              </div>
           </div>
 
           <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
@@ -47,6 +62,13 @@ const ProductPage = async ({ params: { id } }: { params: { id: string } }) => {
           </div>
 
           <ProductPageActions product={product} />
+
+          {/* --- ADD THIS BLOCK TO SHOW THE DESCRIPTION --- */}
+          <div
+            className="text-gray-700 mt-6 prose"
+            dangerouslySetInnerHTML={{ __html: product.description }}
+          />
+          
         </div>
       </div>
 

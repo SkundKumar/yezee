@@ -30,9 +30,22 @@ const ProductGrid = ({ products }: Props) => {
                 <h3 className="text-base font-semibold text-primary">
                   {product.name}
                 </h3>
-                <p className="text-base font-semibold text-primary">
-                ₹{product.price}
-                </p>
+                <div>
+  {product.on_sale ? (
+    <div className="flex items-center gap-2">
+      <p className="text-base font-semibold text-red-600">
+        ₹{product.sale_price}
+      </p>
+      <p className="text-sm text-gray-400 line-through">
+        ₹{product.regular_price}
+      </p>
+    </div>
+  ) : (
+    <p className="text-base font-semibold text-primary">
+      ₹{product.price}
+    </p>
+  )}
+</div>
               </div>
             </Link>
             

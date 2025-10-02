@@ -7,7 +7,8 @@ type Props = {
 
 export default async function CategoryPage({ params }: Props) {
   // 1. First, get the category details using the slug from the URL
-  const category = await getCategoryBySlug(params.slug);
+  const awaitedParams = await params;
+  const category = await getCategoryBySlug(awaitedParams.slug);
   
   let products = [];
   // 2. If the category was found, use its ID to fetch the products
