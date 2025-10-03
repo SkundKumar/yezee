@@ -106,7 +106,7 @@ export function Header() {
             <div className="sm:hidden w-full text-center">
                 <SignedOut>
                     <SignInButton mode="modal">
-                        <button className="w-full text-sm font-semibold">Sign In</button>
+                        <button className="w-full text-sm border-1 rounded-full border-black font-semibold">Sign In</button>
                     </SignInButton>
                 </SignedOut>
 
