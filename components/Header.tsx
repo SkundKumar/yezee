@@ -100,8 +100,20 @@ export function Header() {
           <div className="flex items-center gap-3">
             <Link href="/wishlist" aria-label="Wishlist" className="p-2 text-gray-600 hover:text-black transition-colors hidden sm:block">
               <Heart className="h-6 w-6" />
+              
             </Link>
+            
+            <div className="sm:hidden w-full text-center">
+                <SignedOut>
+                    <SignInButton mode="modal">
+                        <button className="w-full text-sm font-semibold">Sign In</button>
+                    </SignInButton>
+                </SignedOut>
 
+                <SignedIn>
+    <UserButton afterSignOutUrl="/" />
+  </SignedIn>
+            </div>
             <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
               <SheetTrigger asChild>
                 <button aria-label="Open cart" className="relative p-2 text-gray-600 hover:text-black transition-colors">
@@ -149,13 +161,7 @@ export function Header() {
                 {item.title}
               </Link>
             ))}
-             <div className="sm:hidden mt-4 border-t w-full text-center pt-4">
-                <SignedOut>
-                    <SignInButton mode="modal">
-                        <button className="w-full px-4 py-2 text-lg font-medium">Sign In</button>
-                    </SignInButton>
-                </SignedOut>
-            </div>
+             
           </div>
         )}
       </div>
