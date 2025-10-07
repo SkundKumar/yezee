@@ -1,13 +1,17 @@
 import { getProduct, getProducts } from '@/actions/products';
+import ProductImageGallery from '@/components/ProductImageGallery';
 import { ProductPageActions } from '@/components/ProductPageActions';
 import RelatedProducts from '@/components/RelatedProducts';
-import Image from 'next/image';
-import Link from 'next/link';
 import { Truck } from 'lucide-react';
 
 const ProductPage = async ({ params: { id } }: { params: { id: string } }) => {
   // 1. Fetch the main product
   const product = await getProduct(id);
+
+  // Handle case where product is not found
+  if (!product) {
+    return <div className="container mx-auto text-center py-12">Product not found.</div>;
+  }
 
   // 2. Fetch the related products using the IDs
   let relatedProducts = [];
@@ -18,20 +22,9 @@ const ProductPage = async ({ params: { id } }: { params: { id: string } }) => {
   return (
     <div className="container mx-auto px-4 py-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-        {/* Image Column */}
-        <div className="lg:col-span-1">
-          {product.images?.[0]?.src && (
-            <div className="aspect-square rounded-lg overflow-hidden flex items-center justify-center bg-gray-100 sticky top-24">
-              <Image
-                src={product.images[0].src}
-                alt={product.images[0].alt || product.name}
-                width={600}
-                height={600}
-                className="max-w-full max-h-full object-contain"
-                priority
-              />
-            </div>
-          )}
+        {/* Image Column - Now using the gallery component */}
+        <div className="lg:col-span-1 sticky top-24">
+            <ProductImageGallery images={product.images} />
         </div>
 
         {/* Details Column */}
@@ -63,7 +56,6 @@ const ProductPage = async ({ params: { id } }: { params: { id: string } }) => {
 
           <ProductPageActions product={product} />
 
-          {/* --- ADD THIS BLOCK TO SHOW THE DESCRIPTION --- */}
           <div
             className="text-gray-700 mt-6 prose"
             dangerouslySetInnerHTML={{ __html: product.description }}
