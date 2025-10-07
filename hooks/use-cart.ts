@@ -1,12 +1,12 @@
-'use client'
 
-import { CartContext } from '@/providers/cart-context'
-import { useContext } from 'react'
+import { useContext } from 'react';
+import { CartContext } from '@/providers/cart-context';
 
-export function useCart() {
-  const context = useContext(CartContext)
+export const useCart = () => {
+  const context = useContext(CartContext);
   if (context === undefined) {
-    throw new Error('useCart must be used within a CartProvider')
+    throw new Error('useCart must be used within a CartProvider');
   }
-  return context
-}
+  // The context now provides the cart items, functions to modify the cart, and the loading state.
+  return context;
+};

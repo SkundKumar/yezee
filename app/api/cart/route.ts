@@ -1,3 +1,4 @@
+
 import { createClient } from '@supabase/supabase-js';
 import { type NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
@@ -8,7 +9,6 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-// --- THIS IS THE CORRECTED CONFIGURATION ---
 const wooCommerce = new WooCommerceRestApi({
   url: process.env.NEXT_PUBLIC_WORDPRESS_URL!,
   consumerKey: process.env.WC_CONSUMER_KEY!,
@@ -23,7 +23,12 @@ export async function GET(request: NextRequest) {
   
     const { data: cartItems, error: supabaseError } = await supabase
       .from('cart_items')
-      .select('product_id, quantity')
+      .select(`
+        id,
+        product_id,
+        quantity,
+        cart_item_notes ( note )
+      `)
       .eq('user_id', userId);
   
     if (supabaseError) return NextResponse.json({ error: supabaseError.message }, { status: 500 });
@@ -35,7 +40,14 @@ export async function GET(request: NextRequest) {
   
       const fullCartItems = products.map((product: any) => {
           const cartItem = cartItems.find(item => item.product_id === product.id);
-          return { ...product, quantity: cartItem ? cartItem.quantity : 0 };
+          // **THE FIX IS HERE**
+          // We now return BOTH the product ID (as `id`) and the unique cart_item_id.
+          return {
+              ...product, // Contains product.id from WooCommerce
+              cart_item_id: cartItem ? cartItem.id : null, // The unique ID for the item in the cart table
+              quantity: cartItem ? cartItem.quantity : 0,
+              cart_item_notes: cartItem ? cartItem.cart_item_notes : [] // Pass the full notes array
+          };
       });
       return NextResponse.json(fullCartItems);
     } catch (wooError: any) { return NextResponse.json({ error: wooError.message }, { status: 500 }); }
@@ -48,13 +60,41 @@ export async function POST(request: NextRequest) {
 
   const { productId, quantity } = await request.json();
 
-  const { data, error } = await supabase
+  const { data: existingItem, error: selectError } = await supabase
     .from('cart_items')
-    .upsert({ user_id: userId, product_id: productId, quantity: quantity })
-    .select();
-  
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json(data);
+    .select('id')
+    .eq('user_id', userId)
+    .eq('product_id', productId)
+    .single();
+
+  if (selectError && selectError.code !== 'PGRST116') {
+    return NextResponse.json({ error: selectError.message }, { status: 500 });
+  }
+
+  if (existingItem && quantity > 0) {
+    const { data, error } = await supabase
+      .from('cart_items')
+      .update({ quantity: quantity })
+      .eq('id', existingItem.id)
+      .select();
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(data);
+  } else if (quantity > 0) {
+    const { data, error } = await supabase
+      .from('cart_items')
+      .insert({ user_id: userId, product_id: productId, quantity: quantity })
+      .select();
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(data);
+  } else {
+    const { error } = await supabase
+      .from('cart_items')
+      .delete()
+      .eq('user_id', userId)
+      .eq('product_id', productId);
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ message: 'Item removed from cart' });
+  }
 }
 
 // DELETE an item from the cart

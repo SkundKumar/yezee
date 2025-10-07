@@ -5,68 +5,9 @@ import { navbarData } from '@/lib/data';
 import { Menu, X, Heart, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
+import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { useCart } from '@/hooks/use-cart';
-import Image from 'next/image';
-import Checkout from './checkout';
-
-// This is your working CartContent component, it remains unchanged
-const CartContent = ({ cartItems, updateQuantity, removeFromCart, cartTotal }: any) => {
-    return (
-        <>
-          <SheetHeader>
-            <SheetTitle>Your Cart</SheetTitle>
-          </SheetHeader>
-          {cartItems.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full pt-20">
-              <ShoppingBag className="h-16 w-16 text-gray-300 mb-4" />
-              <h3 className="font-semibold text-lg">Your cart is empty</h3>
-              <p className="text-gray-500 text-sm">Add items to see them here.</p>
-            </div>
-          ) : (
-            <div className="flex flex-col h-full">
-              <div className="flex-1 overflow-y-auto p-6">
-                <ul className="-my-6 divide-y divide-gray-200">
-                  {cartItems.map((item: any) => (
-                    <li key={item.id} className="flex py-6">
-                      <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border">
-                        <Image src={item.images?.[0]?.src || '/placeholder.svg'} alt={item.name} width={96} height={96} className="h-full w-full object-contain p-1"/>
-                      </div>
-                      <div className="ml-4 flex flex-1 flex-col">
-                        <div>
-                          <div className="flex justify-between text-base font-medium text-gray-900">
-                            <h3>{item.name}</h3>
-                            <p className="ml-4">₹{item.price}</p>
-                          </div>
-                        </div>
-                        <div className="flex flex-1 items-end justify-between text-sm">
-                          <div className="flex items-center">
-                            <button className="p-1" onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</button>
-                            <p className="mx-2">{item.quantity}</p>
-                            <button className="p-1" onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
-                          </div>
-                          <div className="flex">
-                            <button onClick={() => removeFromCart(item.id)} type="button" className="font-medium text-indigo-600 hover:text-indigo-500">Remove</button>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="border-t border-gray-200 p-6">
-                <div className="flex justify-between text-base font-medium text-gray-900 mb-4">
-                  <p>Subtotal</p>
-                  <p>₹{cartTotal}</p>
-                </div>
-                <Checkout />
-              </div>
-            </div>
-          )}
-        </>
-      );
-};
-
+import CartContent from './CartContent'; // Updated import
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -75,8 +16,6 @@ export function Header() {
     setIsOpen: setIsCartOpen, 
     items: cartItems, 
     updateQuantity, 
-    removeItem: removeFromCart, 
-    cartTotal 
   } = useCart();
 
   return (
@@ -127,14 +66,11 @@ export function Header() {
                   )}
                 </button>
               </SheetTrigger>
-              <SheetContent className="w-full sm:max-w-lg p-0">
-                 <CartContent 
-                    cartItems={cartItems} 
-                    updateQuantity={updateQuantity}
-                    removeFromCart={removeFromCart}
-                    cartTotal={cartTotal}
-                 />
-              </SheetContent>
+              {/* Use the new CartContent component */}
+              <CartContent 
+                cartItems={cartItems} 
+                updateQuantity={updateQuantity}
+              />
             </Sheet>
 
             <div className="hidden sm:flex items-center gap-2">

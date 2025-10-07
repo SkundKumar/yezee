@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import { DM_Mono } from 'next/font/google';
 import './globals.css';
@@ -19,21 +20,21 @@ const notificationMessages = [
 ];
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-return (
-  <ClerkProvider>
+  return (
     <html lang="en">
-      <body className=''>
-        <NotificationBar messages={notificationMessages} /> 
-        <CartProvider>
-          <WishlistProvider>
-            <Header />
-            <main>{children}</main>
-            <Toaster position="top-center" richColors />
-          </WishlistProvider>
-        </CartProvider>
-        <Script id="razorpay-checkout-js" src="https://checkout.razorpay.com/v1/checkout.js" />
-      </body>
+      <ClerkProvider>
+        <body className={dmmono.className}>
+          <NotificationBar messages={notificationMessages} />
+          <CartProvider>
+            <WishlistProvider>
+              <Header />
+              <main>{children}</main>
+              <Toaster position="top-center" richColors />
+            </WishlistProvider>
+          </CartProvider>
+          <Script id="razorpay-checkout-js" src="https://checkout.razorpay.com/v1/checkout.js" />
+        </body>
+      </ClerkProvider>
     </html>
-  </ClerkProvider>
-);
+  );
 }
