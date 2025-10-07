@@ -22,7 +22,23 @@ const notificationMessages = [
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <ClerkProvider>
+      <ClerkProvider
+        appearance={{
+          variables: {
+            colorBackground: 'hsl(var(--background))',
+            colorText: 'hsl(var(--foreground))',
+            colorPrimary: 'hsl(var(--primary))',
+            colorInputBackground: 'hsl(var(--input))',
+            colorInputText: 'hsl(var(--foreground))',
+          },
+          elements: {
+            card: 'shadow-none',
+            modalContent: 'bg-background text-foreground border border-border rounded-lg',
+            modalBackdrop: 'bg-black/50 backdrop-blur-sm',
+            userButtonPopoverCard: 'bg-background text-foreground border border-border rounded-lg',
+          }
+        }}
+      >
         <body className={dmmono.className}>
           <NotificationBar messages={notificationMessages} />
           <CartProvider>
