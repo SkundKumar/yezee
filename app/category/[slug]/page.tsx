@@ -1,33 +1,18 @@
-import { getProducts, getCategoryBySlug } from "@/actions/products"; // Import the new function
-import ProductGrid from "@/components/ProductGrid";
 
-type Props = {
-  params: { slug: string };
-};
+import { getCategoryBySlug, getProducts } from '@/actions/products';
+import ProductGrid from '@/components/ProductGrid';
+import { FadeIn } from '@/components/ui/animation';
 
-export default async function CategoryPage({ params }: Props) {
-  // 1. First, get the category details using the slug from the URL
-  const awaitedParams = await params;
-  const category = await getCategoryBySlug(awaitedParams.slug);
-  
-  let products = [];
-  // 2. If the category was found, use its ID to fetch the products
-  if (category) {
-    products = await getProducts({ category: category.id });
-  }
+export default async function CategoryPage({ params: { slug } }: { params: { slug: string } }) {
+  const category = await getCategoryBySlug(slug);
+  const products = await getProducts({ category: category.id });
 
-  // 3. Display the products using the ProductGrid component
   return (
-    <div>
-      <h1 className="text-4xl font-bold text-center my-8 capitalize">
-        {category ? category.name : params.slug.replace('-', ' ')}
-      </h1>
-      
-      {products.length > 0 ? (
-        <ProductGrid products={products} />
-      ) : (
-        <p className="text-center">No products found in this category.</p>
-      )}
-    </div>
+    <FadeIn>
+        <div className="container mx-auto px-4 py-8">
+            <h1 className="text-3xl font-bold text-center mb-8">{category.name}</h1>
+            <ProductGrid products={products} />
+        </div>
+    </FadeIn>
   );
 }
