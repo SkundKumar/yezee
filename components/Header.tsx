@@ -2,12 +2,12 @@
 
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs"; 
 import { navbarData } from '@/lib/data';
-import { Menu, X, Heart, ShoppingBag } from 'lucide-react';
+import { Menu, X, Heart, ShoppingBag, Settings } from 'lucide-react'; // Import Settings icon
 import Link from 'next/link';
 import React, { useState } from 'react';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { useCart } from '@/hooks/use-cart';
-import CartContent from './CartContent'; // Updated import
+import CartContent from './CartContent';
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -23,12 +23,10 @@ export function Header() {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           
-          {/* Left Side: Logo */}
           <Link href="/" className="">
-          <img className="w-24 h-15" src="/logo.png" alt="" />
+            <img className="w-24 h-15" src="/logo.png" alt="" />
           </Link>
 
-          {/* Center: Desktop Navigation */}
           <nav className="hidden md:flex gap-6">
             {navbarData.map((item) => (
               <Link href={item.link} key={item.idx} className="text-sm font-medium text-gray-600 hover:text-black transition-colors">
@@ -37,11 +35,9 @@ export function Header() {
             ))}
           </nav>
 
-          {/* Right Side: Actions (Wishlist, Cart, Auth, Mobile Menu) */}
           <div className="flex items-center gap-3">
             <Link href="/wishlist" aria-label="Wishlist" className="p-2 text-gray-600 hover:text-black transition-colors hidden sm:block">
               <Heart className="h-6 w-6" />
-              
             </Link>
             
             <div className="sm:hidden w-full text-center">
@@ -52,9 +48,15 @@ export function Header() {
                 </SignedOut>
 
                 <SignedIn>
-    <UserButton afterSignOutUrl="/" />
-  </SignedIn>
+                  <div className="flex items-center justify-center gap-4">
+                    <UserButton afterSignOutUrl="/" />
+                    <Link href="/orders" aria-label="My Orders" className="p-2 text-gray-600 hover:text-black transition-colors">
+                      <Settings className="h-6 w-6" />
+                    </Link>
+                  </div>
+                </SignedIn>
             </div>
+
             <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
               <SheetTrigger asChild>
                 <button aria-label="Open cart" className="relative p-2 text-gray-600 hover:text-black transition-colors">
@@ -66,32 +68,32 @@ export function Header() {
                   )}
                 </button>
               </SheetTrigger>
-              {/* Use the new CartContent component */}
               <CartContent 
                 cartItems={cartItems} 
                 updateQuantity={updateQuantity}
               />
             </Sheet>
 
-            <div className="hidden sm:flex items-center gap-2">
+            <div className="hidden sm:flex items-center gap-4">
                 <SignedOut>
                     <SignInButton mode="modal">
                         <button className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-black">Sign In</button>
                     </SignInButton>
                 </SignedOut>
                 <SignedIn>
-                    <UserButton />
+                  <UserButton />
+                  <Link href="/orders" aria-label="My Orders" className="p-2 text-gray-600 hover:text-black transition-colors">
+                    <Settings className="h-6 w-6" />
+                  </Link>
                 </SignedIn>
             </div>
             
-            {/* Mobile Menu Hamburger Button */}
             <button className="p-2 md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle menu">
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
           </div>
         </div>
         
-        {/* Mobile Menu Dropdown */}
         {isMenuOpen && (
           <div className="md:hidden absolute top-full left-0 w-full bg-white border-t shadow-md p-4 flex flex-col items-center gap-4 z-20">
             {navbarData.map((item) => (

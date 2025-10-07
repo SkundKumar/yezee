@@ -1,6 +1,6 @@
 
 import { createClient } from '@supabase/supabase-js';
-import { auth, clerkClient } from '@clerk/nextjs/server';
+import { auth } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
 
 const supabase = createClient(
@@ -15,30 +15,30 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const user = await clerkClient.users.getUser(userId);
-    const isAdmin = user?.publicMetadata?.role === 'admin';
-
-    if (!isAdmin) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
-    }
-
+    // Fetch all orders for the user, ordered by creation date
     const { data: orders, error } = await supabase
       .from('orders')
-      .select('*')
+      .select('id, created_at, order_details, tracking_details(status)')
+      .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.error('Error fetching orders:', error);
-      return NextResponse.json({ message: error.message }, { status: 500 });
+      throw error;
     }
 
-    return NextResponse.json({ orders });
+    // Format the orders to be more frontend-friendly
+    const formattedOrders = orders.map(order => ({
+        id: order.id,
+        createdAt: order.created_at,
+        total: order.order_details.total,
+        status: order.tracking_details?.status || 'Processing',
+        receiptId: order.order_details.receipt_id,
+    }));
+
+    return NextResponse.json({ orders: formattedOrders });
 
   } catch (error: any) {
-    // **THE FIX IS HERE**
-    // We were hiding the real error. Now, we will return the actual exception
-    // message, which will give us the root cause of the Internal Server Error.
-    console.error('Caught an exception in GET /api/orders:', error);
-    return NextResponse.json({ message: error.message || 'An unknown internal error occurred.' }, { status: 500 });
+    console.error('Error fetching orders:', error);
+    return NextResponse.json({ message: error.message || 'Internal Server Error' }, { status: 500 });
   }
 }

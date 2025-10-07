@@ -5,11 +5,15 @@ import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { CheckCircle2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
-// CORRECTED INTERFACE: The note is now part of the product, and there is no separate 'notes' array.
+// CORRECTED INTERFACE: Add tracking_details to show the order status
 interface Order {
   id: number;
   created_at: string;
+  tracking_details: {
+      status: string;
+  } | null;
   order_details: {
     receipt_id: string;
     total: number;
@@ -26,9 +30,8 @@ interface Order {
       name: string;
       quantity: number;
       price: number;
-      note?: string | null; // THE NOTE IS HERE
+      note?: string | null;
     }[];
-    // The separate 'notes' array is gone.
   };
 }
 
@@ -92,10 +95,15 @@ function SuccessPage() {
                     <p className='text-sm text-gray-600'>Estimated Delivery: <strong>{deliveryEstimate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</strong> (5-7 business days)</p>
                 </div>
 
+                {/* ADDED ORDER STATUS SECTION */}
+                <div className="border-t pt-4 text-center">
+                    <h3 className="font-bold text-lg mb-2">Order Status</h3>
+                    <Badge variant="secondary" className="text-base font-semibold">{order.tracking_details?.status || 'Processing'}</Badge>
+                </div>
+
                 <div className="border-t border-b py-4">
                     <h3 className="font-bold text-lg mb-2">Items Ordered</h3>
                     <ul className="space-y-4">
-                        {/* THE PERMANENT FIX: Read the note directly from the product object. */}
                         {order.order_details.products.map((product, index) => (
                             <li key={index} className='text-sm'>
                                 <div className="flex justify-between items-center">
@@ -138,4 +146,3 @@ export default function SuccessPageWrapper() {
             <SuccessPage />
         </Suspense>
     );
-}
