@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
     }
 
     // --- Step 4: Create the initial Tracking Details Record ---
-    const { error: trackingErr } = await supabase.from('tracking_details').insert({ order_id: newOrderId, status: 'Processing' });
+    const { error: trackingErr } = await supabase.from('tracking_details').insert({ order_id: newOrderId, status: 'processing' });
     if (trackingErr) {
         console.error('Failed to create initial tracking record:', trackingErr.message);
     }
