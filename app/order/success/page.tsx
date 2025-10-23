@@ -7,13 +7,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { CheckCircle2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
-// CORRECTED INTERFACE: Add tracking_details to show the order status
 interface Order {
   id: number;
   created_at: string;
   tracking_details: {
       status: string;
   } | null;
+  return_status: string | null;
   order_details: {
     receipt_id: string;
     total: number;
@@ -95,11 +95,17 @@ function SuccessPage() {
                     <p className='text-sm text-gray-600'>Estimated Delivery: <strong>{deliveryEstimate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</strong> (5-7 business days)</p>
                 </div>
 
-                {/* ADDED ORDER STATUS SECTION */}
                 <div className="border-t pt-4 text-center">
                     <h3 className="font-bold text-lg mb-2">Order Status</h3>
                     <Badge variant="secondary" className="text-base font-semibold">{order.tracking_details?.status || 'Processing'}</Badge>
                 </div>
+
+                {order.return_status && (
+                    <div className="border-t pt-4 text-center">
+                        <h3 className="font-bold text-lg mb-2">Return Status</h3>
+                        <Badge variant="secondary" className="text-base font-semibold">{order.return_status}</Badge>
+                    </div>
+                )}
 
                 <div className="border-t border-b py-4">
                     <h3 className="font-bold text-lg mb-2">Items Ordered</h3>

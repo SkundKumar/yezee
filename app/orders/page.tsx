@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Eye } from 'lucide-react';
+import { Eye, Undo2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface Order {
@@ -90,11 +90,18 @@ export default function OrdersPage() {
                         <Badge >{order.status}</Badge>
                     </TableCell>
                     <TableCell className="text-right">${order.total.toFixed(2)}</TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right space-x-2">
                       <Button variant="outline" size="sm" onClick={() => router.push(`/order/success?order_id=${order.id}`)}>
                         <Eye className="h-4 w-4 mr-2" />
                         View Details
                       </Button>
+                      {/* Show the return button only if the order has been delivered */}
+                      {order.status.toLowerCase() === 'delivered' && (
+                        <Button variant="secondary" size="sm" onClick={() => router.push(`/account/returns/${order.id}`)}>
+                            <Undo2 className="h-4 w-4 mr-2" />
+                            Request Return
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}

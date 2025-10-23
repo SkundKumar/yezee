@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -63,6 +64,11 @@ export default function AdminOrdersPage() {
 
   return (
     <div className="container mx-auto p-4 md:p-8">
+        <div className="flex justify-end mb-4">
+            <Button asChild variant="outline">
+                <Link href="/admin/returns">Manage Returns</Link>
+            </Button>
+        </div>
       <Card className="w-full max-w-6xl mx-auto shadow-lg">
         <CardHeader>
           <CardTitle className="text-3xl font-bold">Manage Orders</CardTitle>

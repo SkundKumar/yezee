@@ -46,14 +46,15 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     // Step 3: Fetch tracking details
     const { data: trackingData } = await supabase.from('tracking_details').select('*').eq('order_id', orderId).single();
 
-    // THE FIX: The notes are now embedded in the 'order_details' JSON.
-    // We no longer need to fetch them separately. The structure is already correct.
+    // Step 4: Fetch return request status
+    const { data: returnData } = await supabase.from('return_requests').select('status').eq('order_id', orderId).single();
 
-    // Step 4: Construct the final order object
+    // Step 5: Construct the final order object
     const formattedOrder = {
       id: orderData.id,
       created_at: orderData.created_at,
       tracking_details: trackingData,
+      return_status: returnData ? returnData.status : null,
       order_details: {
         ...orderData.order_details,
         shipping_address: shippingAddress, // Attach the correctly fetched address
